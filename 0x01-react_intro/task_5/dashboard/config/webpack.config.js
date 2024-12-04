@@ -1,38 +1,54 @@
-const path = require('path');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: './src/index.js', // Entry point for your app
+  entry: "./src/index.js",
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: "bundle.js",
   },
-  devtool: 'inline-source-map', // Inline source map for debugging
-  devServer: {
-    static: './dist', // Serve files from the 'dist' folder
-    hot: true,        // Enable hot module reloading
-    open: true,       // Automatically open the browser
-    port: 3000,       // Dev server runs on port 3000
-  },
+  mode: "development",
   module: {
     rules: [
       {
-        test: /\.js$|\.jsx$/, // Match .js and .jsx files
-        exclude: /node_modules/, // Exclude node_modules
-        use: {
-          loader: 'babel-loader',
-        },
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.css$/, // Match .css files
-        use: ['style-loader', 'css-loader'], // Use style-loader and css-loader
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        // type: 'asset/resource',
+        use: [
+          "file-loader",
+          {
+            loader: "image-webpack-loader",
+            options: {
+              bypassOnDebug: true, // webpack@1.x
+              disable: true, // webpack@2.x and newer
+            },
+          },
+        ],
       },
       {
-        test: /\.(png|jpe?g|gif|svg)$/, // Match image files
-        type: 'asset/resource',        // Use Webpack's asset modules for images
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: ["babel-loader"],
       },
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx'], // Resolve both .js and .jsx files
+    extensions: ["*", ".js", ".jsx"],
   },
+  devServer: {
+    static: "./dist",
+    compress: true,
+    open: true,
+    hot: true,
+    port: 8564,
+  },
+  devtool: "inline-source-map",
+  plugins: [
+    new HtmlWebpackPlugin({
+      name: "index.html",
+      inject: false,
+      template: "./dist/index.html",
+    }),
+  ],
 };
